@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple-Read | Accessible Information</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simple-Read 📚</h1>
+        <p class="subtitle">Making complex documents easy for everyone to understand.</p>
+
+        <form method="POST" enctype="multipart/form-data" id="simplifyForm">
+            <textarea name="content" placeholder="Paste complex text here OR leave empty to use a file...">{{ original }}</textarea>
+
+            <div style="margin: 20px 0; padding: 15px; border: 2px dashed #e2e8f0; border-radius: 12px; text-align: center; background: #fdfdfd;">
+                <label style="font-weight: 600; color: #64748b; display: block; margin-bottom: 8px;">Upload PDF or Word Document:</label>
+                <input type="file" name="file" accept=".pdf,.docx" style="font-size: 0.9rem; color: #64748b;">
+            </div>
+
+            <button type="submit" id="submitBtn">Simplify Document</button>
+        </form>
+
+        <div id="loading" style="display:none; text-align: center; margin-top: 20px; color: #3b82f6; font-weight: 600;">
+            Analyzing document... please wait.
+        </div>
+
+        {% if simplified %}
+        <div class="result-grid">
+            <div class="pane original-pane">
+                <h3>Original Source</h3>
+                <p>{{ original[:1000] }}{% if original|length > 1000 %}...[Truncated for view]{% endif %}</p>
+            </div>
+            <div class="pane simple-pane">
+                <h3>Simplified Version</h3>
+                <p>{{ simplified }}</p>
+                <button onclick="copyToClipboard()" style="margin-top: 20px; padding: 8px; font-size: 0.8rem; background: #64748b; width: auto;">
+                    Copy Results
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Show loading message when form is submitted
+        document.getElementById('simplifyForm').onsubmit = function() {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').innerText = "Processing...";
+            document.getElementById('loading').style.display = "block";
+        };
+
+        function copyToClipboard() {
+            const text = document.querySelector('.simple-pane p').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied!");
+            });
+        }
+    </script>
+</body>
+</html>
